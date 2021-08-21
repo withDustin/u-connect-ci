@@ -1,0 +1,98 @@
+# This is a basic workflow to help you get started with Actions
+
+name: iOS App
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      repo_ref:
+        description: Remote ref
+        required: false
+        default: "main"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-ios:
+    name: Build iOS app
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+    env:
+      KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APP_STORE_CERTIFICATE_PASSWORD: ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }}
+      MATCH_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      REPO_REF: ${{ github.event.inputs.repo_ref || 'main' }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          repository: "withDustin/u-connect-app"
+          token: ${{ secrets.DUONGDEV_GH_TOKEN }}
+          ref: ${{ env.REPO_REF }}
+
+      - name: Check for source
+        run: |
+          ls -l
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+          working-directory: "ios"
+
+      - name: Set up keychain
+        working-directory: ios
+        run: |
+          pwd
+          ls -l
+          bundler exec fastlane run \
+            create_keychain \
+            name:$KEYCHAIN_NAME \
+            password:$KEYCHAIN_PASSWORD \
+            unlock:true \
+            timeout:0 \
+            default_keychain:true \
+            lock_when_sleeps:false
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Restoring yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install yarn dependencies
+        run: yarn install
+
+      - name: Restoring pods cache
+        uses: actions/cache@v2
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Run pod install
+        working-directory: ios
+        run: pod install
+
+      - name: Run fastlane beta
+        working-directory: ios
+        run: bundler exec fastlane beta
