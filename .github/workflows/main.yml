@@ -38,7 +38,8 @@ jobs:
 
       - name: Set up keychain
         run: |
-          cd ios && fastlane run create_keychain name:${{ secrets.KEYCHAIN_NAME }} password:${{ secrets.KEYCHAIN_PASSWORD }}
+          cd ios
+          fastlane run create_keychain name:${{ secrets.KEYCHAIN_NAME }} password:${{ secrets.KEYCHAIN_PASSWORD }} unlock:true timeout:0 default_keychain:true lock_when_sleeps:false
         
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
