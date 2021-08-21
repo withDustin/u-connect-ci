@@ -24,10 +24,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-          
-      - uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '>= 2.6'
       
       - name: Set up keychain
         run: |
@@ -64,8 +60,14 @@ jobs:
           rm -rf Pods
           rm -rf .xcworkspace
           pod install
-
-      - uses: maierj/fastlane-action@v2.0.1
+          
+      - uses: ruby/setup-ruby@v1
         with:
-          lane: 'beta'
+          ruby-version: 2.6 # Not needed with a .ruby-version file
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          
+      - name: Run fastlane
+        run: |
+          cd ios
+          bundle exec fastlane beta
           
