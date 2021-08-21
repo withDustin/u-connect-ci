@@ -55,6 +55,10 @@ jobs:
       - name: Install and build source
         run: |
           yarn
-          cd ios && pod install
+          cd ios
+          rm -rf Podfile.lock
+          rm -rf Pods
+          delete .xcworkspace
+          pod install
           bundle exec fastlane beta
           
