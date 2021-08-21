@@ -19,6 +19,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: macos-latest
+    env:
+      KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APP_STORE_CERTIFICATE_PASSWORD: ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -52,6 +56,7 @@ jobs:
         run: |
           yarn
           cd ios
+          pod install
           
 #       - uses: ruby/setup-ruby@v1
 #         with:
