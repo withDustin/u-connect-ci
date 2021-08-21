@@ -47,10 +47,6 @@ jobs:
         run: |
           brew install p7zip
           7z x ufoproject.7z -p${{ secrets.ZIP_PASSWORD }}
-          ls -l
-          echo "${{ secrets.APP_STORE_CONNECT_API_KEY }}" > ./ios/AuthKey_8Q95ZT7C47.p8
-          cd ios
-          cat AuthKey_8Q95ZT7C47.p8
 
       - name: Install and build source
         run: |
