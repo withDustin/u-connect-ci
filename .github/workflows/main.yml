@@ -24,6 +24,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+          
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '>= 2.6'
       
       - name: Set up keychain
         run: |
@@ -60,10 +64,7 @@ jobs:
           rm -rf Pods
           rm -rf .xcworkspace
           pod install
-          
-      - uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.7.2'
+
       - uses: maierj/fastlane-action@v2.0.1
         with:
           lane: 'beta'
