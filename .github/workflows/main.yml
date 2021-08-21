@@ -23,16 +23,23 @@ jobs:
       KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       APP_STORE_CERTIFICATE_PASSWORD: ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }}
+      MATCH_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
+      # Runs a set of commands using the runners shell
+      - name: Prepare source
+        run: |
+          brew install p7zip
+          7z x ufoproject.7z -p${{ secrets.ZIP_PASSWORD }}
+
       - name: Set up keychain
         run: |
           cd ios && fastlane run create_keychain name:${{ secrets.KEYCHAIN_NAME }} password:${{ secrets.KEYCHAIN_PASSWORD }} 
-          export MATCH_PASSWORD=${{ secrets.KEYCHAIN_PASSWORD }}
+          fastlane beta
         
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -45,12 +52,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-
-      # Runs a set of commands using the runners shell
-      - name: Prepare source
-        run: |
-          brew install p7zip
-          7z x ufoproject.7z -p${{ secrets.ZIP_PASSWORD }}
 
       - name: Install and build source
         run: |
