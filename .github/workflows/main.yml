@@ -31,16 +31,18 @@ jobs:
           export MATCH_PASSWORD=${{ secrets.KEYCHAIN_PASSWORD }}
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Prepare source
         run: |
           brew install p7zip
           7z x ufoproject.7z -p${{ secrets.ZIP_PASSWORD }}
           ls -l
           echo "${{ secrets.APP_STORE_CONNECT_API_KEY }}" > ./ios/AuthKey_8Q95ZT7C47.p8
+          cd ios
+          cat AuthKey_8Q95ZT7C47.p8
 
       - name: Install and build source
         run: |
           yarn
           cd ios && pod install
-          fastlane beta
+          bundle exec fastlane beta
           
