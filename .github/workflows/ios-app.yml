@@ -91,7 +91,9 @@ jobs:
 
       - name: Run pod install
         working-directory: ios
-        run: pod install
+        run: |
+          rm -rf Podfile.lock
+          pod install
 
       - name: Run fastlane beta
         working-directory: ios
