@@ -17,7 +17,8 @@ on:
         description: Remote ref
         required: false
         default: "main"
-      build_number: Build number
+      build_number:
+        description: Build number
         required: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -34,6 +35,9 @@ jobs:
       MATCH_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       REPO_REF: ${{ github.event.inputs.repo_ref || 'main' }}
       BUILD_NUMBER: ${{ github.event.inputs.build_number || env.GITHUB_RUN_ID }}
+      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
