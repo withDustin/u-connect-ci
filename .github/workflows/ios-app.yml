@@ -34,7 +34,7 @@ jobs:
       APP_STORE_CERTIFICATE_PASSWORD: ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }}
       MATCH_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       REPO_REF: ${{ github.event.inputs.repo_ref || 'main' }}
-      BUILD_NUMBER: ${{ github.event.inputs.build_number || env.GITHUB_RUN_ID }}
+      BUILD_NUMBER: ${{ github.event.inputs.build_number || github.run_id }}
       APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
