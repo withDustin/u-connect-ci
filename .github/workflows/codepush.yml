@@ -30,7 +30,7 @@ jobs:
   codepush:
     name: CodePush
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       REPO_REF: ${{ github.event.inputs.repo_ref || 'main' }}
       APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
@@ -69,8 +69,8 @@ jobs:
 
       - name: CodePush to iOS
         run: yarn codepush:ios
-        if: ${{ github.inputs.codepush_ios == '1' }}
+        if: ${{ github.event.inputs.codepush_ios == '1' }}
 
       - name: CodePush to Android
         run: yarn codepush:android
-        if: ${{ github.inputs.codepush_android == '1' }}
+        if: ${{ github.event.inputs.codepush_android == '1' }}
