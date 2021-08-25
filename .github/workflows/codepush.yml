@@ -1,0 +1,76 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CodePush
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      repo_ref:
+        description: Remote ref
+        required: false
+        default: "main"
+      codepush_ios:
+        description: iOS (1 to enable)
+        required: false
+      codepush_android:
+        description: Android (1 to enable)
+        required: false
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  codepush:
+    name: CodePush
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+    env:
+      REPO_REF: ${{ github.event.inputs.repo_ref || 'main' }}
+      APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_ACCESS_TOKEN }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          repository: "withDustin/u-connect-app"
+          token: ${{ secrets.DUONGDEV_GH_TOKEN }}
+          ref: ${{ env.REPO_REF }}
+
+      - name: Check for source
+        run: |
+          ls -l
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Restoring yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install yarn dependencies
+        run: yarn install
+        
+      - name: Install AppCenter CLI
+        run: npm install -g appcenter-cli
+
+      - name: CodePush to iOS
+        run: yarn codepush:ios
+        if: ${{ github.inputs.codepush_ios == '1' }}
+
+      - name: CodePush to Android
+        run: yarn codepush:android
+        if: ${{ github.inputs.codepush_android == '1' }}
