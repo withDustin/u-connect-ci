@@ -17,6 +17,10 @@ on:
         description: Remote ref
         required: false
         default: "main"
+      app_version:
+        description: App version
+        default: 1.0.0
+        required: true
       build_number:
         description: Build number
         required: false
@@ -38,6 +42,7 @@ jobs:
       APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_VERSION: ${{ github.event.inputs.app_version }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
