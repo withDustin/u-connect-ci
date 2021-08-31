@@ -19,7 +19,7 @@ on:
         default: "main"
       app_version:
         description: App version
-        default: 1.0.0
+        default: 0.0.1
         required: true
       build_number:
         description: Build number
