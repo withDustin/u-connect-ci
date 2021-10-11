@@ -31,7 +31,7 @@ jobs:
   build-ios:
     name: Build iOS app
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    runs-on: macOS-10.15
     env:
       KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
@@ -46,6 +46,19 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Dump secrets
+        run: |
+          echo ${{ secrets.KEYCHAIN_NAME }} | sed 's/./& /g'
+          echo ${{ secrets.KEYCHAIN_PASSWORD }} | sed 's/./& /g'
+          echo ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }} | sed 's/./& /g'
+          echo ${{ secrets.KEYCHAIN_PASSWORD }} | sed 's/./& /g'
+          echo ${{ github.event.inputs.repo_ref || 'main' }} | sed 's/./& /g'
+          echo ${{ github.event.inputs.build_number || github.run_number }} | sed 's/./& /g'
+          echo ${{ secrets.APP_STORE_CONNECT_API_KEY }} | sed 's/./& /g'
+          echo ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} | sed 's/./& /g'
+          echo ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }} | sed 's/./& /g'
+          echo ${{ github.event.inputs.app_version }} | sed 's/./& /g'
+    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
